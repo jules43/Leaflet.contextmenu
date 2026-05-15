@@ -7,6 +7,7 @@
     "example": "examples"
   },
   "scripts": {
+    "dev": "@echo http://localhost:8000/examples/index.html&&python -m http.server",
     "installuglify": "npm install uglify -g",
     "concat": "copy /b src\\copyright.js + src\\Map.ContextMenu.js + src\\Mixin.ContextMenu.js + src\\end.js dist\\leaflet.contextmenu.js",
     "compress": "uglifyjs.cmd dist/leaflet.contextmenu.js -m --comments -o dist/leaflet.contextmenu.min.js && uglifycss dist/leaflet.contextmenu.css > dist/leaflet.contextmenu.min.css",
