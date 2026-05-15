@@ -1,21 +1,23 @@
-L.Map.mergeOptions({
+import { Map, Handler, Browser, LatLng, DomUtil, DomEvent, Util, Marker, Mixin, point as L_Point, setOptions, Path, extend } from 'leaflet'
+
+Map.mergeOptions({
     contextmenuItems: []
 });
 
-L.Map.ContextMenu = L.Handler.extend({
-    _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
+export const ContextMenu = Handler.extend({
+    _touchstart: Browser.msPointer ? 'MSPointerDown' : Browser.pointer ? 'pointerdown' : 'touchstart',
 
     statics: {
         BASE_CLS: 'leaflet-contextmenu'
     },
 
     initialize: function (map) {
-        L.Handler.prototype.initialize.call(this, map);
+        Handler.prototype.initialize.call(this, map);
 
         this._items = [];
         this._visible = false;
 
-        var container = this._container = L.DomUtil.create('div', L.Map.ContextMenu.BASE_CLS, map._container);
+        var container = this._container = DomUtil.create('div', ContextMenu.BASE_CLS, map._container);
         container.style.zIndex = 10000;
         container.style.position = 'absolute';
 
@@ -25,22 +27,22 @@ L.Map.ContextMenu = L.Handler.extend({
 
         this._createItems();
 
-        L.DomEvent
-            .on(container, 'click', L.DomEvent.stop)
-            .on(container, 'mousedown', L.DomEvent.stop)
-            .on(container, 'dblclick', L.DomEvent.stop)
-            .on(container, 'contextmenu', L.DomEvent.stop);
+        DomEvent
+            .on(container, 'click', DomEvent.stop)
+            .on(container, 'mousedown', DomEvent.stop)
+            .on(container, 'dblclick', DomEvent.stop)
+            .on(container, 'contextmenu', DomEvent.stop);
     },
 
     addHooks: function () {
         var container = this._map.getContainer();
 
-        L.DomEvent
+        DomEvent
             .on(container, 'mouseleave', this._hide, this)
             .on(document, 'keydown', this._onKeyDown, this);
 
-        if (L.Browser.touch) {
-            L.DomEvent.on(document, this._touchstart, this._hide, this);
+        if (Browser.touch) {
+            DomEvent.on(document, this._touchstart, this._hide, this);
         }
 
         this._map.on({
@@ -53,12 +55,12 @@ L.Map.ContextMenu = L.Handler.extend({
     removeHooks: function () {
         var container = this._map.getContainer();
 
-        L.DomEvent
+        DomEvent
             .off(container, 'mouseleave', this._hide, this)
             .off(document, 'keydown', this._onKeyDown, this);
 
-        if (L.Browser.touch) {
-            L.DomEvent.off(document, this._touchstart, this._hide, this);
+        if (Browser.touch) {
+            DomEvent.off(document, this._touchstart, this._hide, this);
         }
 
         this._map.off({
@@ -69,7 +71,7 @@ L.Map.ContextMenu = L.Handler.extend({
     },
 
     showAt: function (point, data) {
-        if (point instanceof L.LatLng) {
+        if (point instanceof LatLng) {
             point = this._map.latLngToContainerPoint(point);
         }
         this._showAtPoint(point, data);
@@ -109,7 +111,7 @@ L.Map.ContextMenu = L.Handler.extend({
         }
 
         if (item) {
-            this._removeItem(L.Util.stamp(item));
+            this._removeItem(Util.stamp(item));
 
             this._sizeChanged = true;
 
@@ -130,7 +132,7 @@ L.Map.ContextMenu = L.Handler.extend({
 
         while (items.length) {
             item = items[0];
-            this._removeItem(L.Util.stamp(item));
+            this._removeItem(Util.stamp(item));
         }
         return items;
     },
@@ -155,21 +157,21 @@ L.Map.ContextMenu = L.Handler.extend({
 
     setDisabled: function (item, disabled) {
         var container = this._container,
-        itemCls = L.Map.ContextMenu.BASE_CLS + '-item';
+        itemCls = ContextMenu.BASE_CLS + '-item';
 
         if (!isNaN(item)) {
             item = container.children[item];
         }
 
-        if (item && L.DomUtil.hasClass(item, itemCls)) {
+        if (item && DomUtil.hasClass(item, itemCls)) {
             if (disabled) {
-                L.DomUtil.addClass(item, itemCls + '-disabled');
+                DomUtil.addClass(item, itemCls + '-disabled');
                 this._map.fire('contextmenu.disableitem', {
                     contextmenu: this,
                     el: item
                 });
             } else {
-                L.DomUtil.removeClass(item, itemCls + '-disabled');
+                DomUtil.removeClass(item, itemCls + '-disabled');
                 this._map.fire('contextmenu.enableitem', {
                     contextmenu: this,
                     el: item
@@ -197,40 +199,41 @@ L.Map.ContextMenu = L.Handler.extend({
             return this._createSeparator(container, index);
         }
 
-        var itemCls = L.Map.ContextMenu.BASE_CLS + '-item' + (options.itemCls ? ' ' + options.itemCls : ''),
-            cls = options.disabled ? (itemCls + ' ' + itemCls + '-disabled') : itemCls,
+        var itemCls = `${ContextMenu.BASE_CLS}-item${options.itemCls ? ' ' + options.itemCls : ''}`,
+            cls = itemCls + options.disabled ? ` ${itemCls}-disabled` : '',
             el = this._insertElementAt('a', cls, container, index),
             callback = this._createEventHandler(el, options.callback, options.context, options.hideOnSelect),
             icon = this._getIcon(options),
             iconCls = this._getIconCls(options),
+            iconHtml = this._getIconHtml(options),
             html = '';
 
         if (icon) {
-            html = '<img class="' + L.Map.ContextMenu.BASE_CLS + '-icon" src="' + icon + '"/>';
-        } else if (iconCls) {
-            html = '<span class="' + L.Map.ContextMenu.BASE_CLS + '-icon ' + iconCls + '"></span>';
+            html = `<img class="${ContextMenu.BASE_CLS}-icon ${iconCls}" src="${icon}"/>`;
+        } else if (iconCls || iconHtml) {
+            html = `<span class="${ContextMenu.BASE_CLS}-icon ${iconCls}">${iconHtml}</span>`;
         }
 
         el.innerHTML = html + options.text;
         el.href = '#';
 
-        L.DomEvent
+        DomEvent
             .on(el, 'mouseover', this._onItemMouseOver, this)
             .on(el, 'mouseout', this._onItemMouseOut, this)
-            .on(el, 'mousedown', L.DomEvent.stopPropagation)
+            .on(el, 'mousedown', DomEvent.stopPropagation)
             .on(el, 'click', callback);
 
-        if (L.Browser.touch) {
-            L.DomEvent.on(el, this._touchstart, L.DomEvent.stopPropagation);
+        if (Browser.touch) {
+            DomEvent.on(el, this._touchstart, DomEvent.stopPropagation);
         }
 
         // Devices without a mouse fire "mouseover" on tap, but never “mouseout"
-        if (!L.Browser.pointer) {
-            L.DomEvent.on(el, 'click', this._onItemMouseOut, this);
+        if (!Browser.pointer) {
+            DomEvent.on(el, 'click', this._onItemMouseOut, this);
         }
 
         return {
-            id: L.Util.stamp(el),
+            id: Util.stamp(el),
             el: el,
             callback: callback
         };
@@ -249,18 +252,18 @@ L.Map.ContextMenu = L.Handler.extend({
                 callback = item.callback;
 
                 if (callback) {
-                    L.DomEvent
+                    DomEvent
                         .off(el, 'mouseover', this._onItemMouseOver, this)
                         .off(el, 'mouseover', this._onItemMouseOut, this)
-                        .off(el, 'mousedown', L.DomEvent.stopPropagation)
+                        .off(el, 'mousedown', DomEvent.stopPropagation)
                         .off(el, 'click', callback);
 
-                    if (L.Browser.touch) {
-                        L.DomEvent.off(el, this._touchstart, L.DomEvent.stopPropagation);
+                    if (Browser.touch) {
+                        DomEvent.off(el, this._touchstart, DomEvent.stopPropagation);
                     }
 
-                    if (!L.Browser.pointer) {
-                        L.DomEvent.on(el, 'click', this._onItemMouseOut, this);
+                    if (!Browser.pointer) {
+                        DomEvent.on(el, 'click', this._onItemMouseOut, this);
                     }
                 }
 
@@ -274,10 +277,10 @@ L.Map.ContextMenu = L.Handler.extend({
     },
 
     _createSeparator: function (container, index) {
-        var el = this._insertElementAt('div', L.Map.ContextMenu.BASE_CLS + '-separator', container, index);
+        var el = this._insertElementAt('div', ContextMenu.BASE_CLS + '-separator', container, index);
 
         return {
-            id: L.Util.stamp(el),
+            id: Util.stamp(el),
             el: el
         };
     },
@@ -285,11 +288,11 @@ L.Map.ContextMenu = L.Handler.extend({
     _createEventHandler: function (el, func, context, hideOnSelect) {
         var me = this,
             map = this._map,
-            disabledCls = L.Map.ContextMenu.BASE_CLS + '-item-disabled',
+            disabledCls = ContextMenu.BASE_CLS + '-item-disabled',
             hideOnSelect = (hideOnSelect !== undefined) ? hideOnSelect : true;
 
         return function (e) {
-            if (L.DomUtil.hasClass(el, disabledCls)) {
+            if (DomUtil.hasClass(el, disabledCls)) {
                 return;
             }
 
@@ -348,7 +351,7 @@ L.Map.ContextMenu = L.Handler.extend({
     _showAtPoint: function (pt, data) {
         if (this._items.length) {
             var map = this._map,
-            event = L.extend(data || {}, {contextmenu: this});
+            event = extend(data || {}, {contextmenu: this});
 
             this._showLocation = {
                 containerPoint: pt
@@ -380,11 +383,15 @@ L.Map.ContextMenu = L.Handler.extend({
     },
 
     _getIcon: function (options) {
-        return L.Browser.retina && options.retinaIcon || options.icon;
+        return Browser.retina && options.retinaIcon || options.icon;
     },
 
     _getIconCls: function (options) {
-        return L.Browser.retina && options.retinaIconCls || options.iconCls;
+        return Browser.retina && options.retinaIconCls || options.iconCls || '';
+    },
+
+    _getIconHtml: function (options) {
+        return options.iconHtml || '';
     },
 
     _setPosition: function (pt) {
@@ -394,7 +401,7 @@ L.Map.ContextMenu = L.Handler.extend({
             anchor;
 
         if (this._map.options.contextmenuAnchor) {
-            anchor = L.point(this._map.options.contextmenuAnchor);
+            anchor = L_Point(this._map.options.contextmenuAnchor);
             pt = pt.add(anchor);
         }
 
@@ -450,12 +457,16 @@ L.Map.ContextMenu = L.Handler.extend({
     },
 
     _onItemMouseOver: function (e) {
-        L.DomUtil.addClass(e.target || e.srcElement, 'over');
+        DomUtil.addClass(e.target || e.srcElement, 'over');
     },
 
     _onItemMouseOut: function (e) {
-        L.DomUtil.removeClass(e.target || e.srcElement, 'over');
+        DomUtil.removeClass(e.target || e.srcElement, 'over');
     }
 });
 
-L.Map.addInitHook('addHandler', 'contextmenu', L.Map.ContextMenu);
+export const L_contextmenu = function (options) {
+    return new ContextMenu(options);
+};
+
+Map.addInitHook('addHandler', 'contextmenu', L_contextmenu);

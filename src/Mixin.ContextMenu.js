@@ -1,6 +1,6 @@
-L.Mixin.ContextMenu = {
+Mixin.ContextMenu = {
     bindContextMenu: function (options) {
-        L.setOptions(this, options);
+        setOptions(this, options);
         this._initContextMenu();
 
         return this;
@@ -46,7 +46,7 @@ L.Mixin.ContextMenu = {
             data, pt, i, l;
 
         if (this._map.contextmenu) {
-            data = L.extend({relatedTarget: this, relatedEvent: e}, e);
+            data = extend({relatedTarget: this, relatedEvent: e}, e);
 
             pt = this._map.mouseEventToContainerPoint(e.originalEvent);
 
@@ -83,7 +83,7 @@ L.Mixin.ContextMenu = {
     }
 };
 
-var classes = [L.Marker, L.Path],
+var classes = [Marker, Path],
     defaultOptions = {
         contextmenu: false,
         contextmenuItems: [],
@@ -94,7 +94,7 @@ var classes = [L.Marker, L.Path],
 for (i = 0, l = classes.length; i < l; i++) {
     cls = classes[i];
 
-    // L.Class should probably provide an empty options hash, as it does not test
+    // Class should probably provide an empty options hash, as it does not test
     // for it here and add if needed
     if (!cls.prototype.options) {
         cls.prototype.options = defaultOptions;
@@ -108,5 +108,5 @@ for (i = 0, l = classes.length; i < l; i++) {
         }
     });
 
-    cls.include(L.Mixin.ContextMenu);
+    cls.include(Mixin.ContextMenu);
 }
