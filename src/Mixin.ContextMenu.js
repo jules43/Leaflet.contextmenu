@@ -63,22 +63,22 @@ L.Mixin.ContextMenu = {
                 this._items.push(this._map.contextmenu.insertItem(itemOptions, itemOptions.index));
             }
 
-            this._map.once('contextmenu.hide', this._hideContextMenu, this);
+            this._map.once('contextmenu.hide', this._hideContextMenu(this._map), this);
 
             this._map.contextmenu.showAt(pt, data);
         }
     },
 
-    _hideContextMenu: function () {
+    _hideContextMenu: function (m) {
         var i, l;
 
         for (i = 0, l = this._items.length; i < l; i++) {
-            this._map.contextmenu.removeItem(this._items[i]);
+            m.contextmenu.removeItem(this._items[i]);
         }
         this._items.length = 0;
 
         if (!this.options.contextmenuInheritItems) {
-            this._map.contextmenu.showAllItems();
+            m.contextmenu.showAllItems();
         }
     }
 };
