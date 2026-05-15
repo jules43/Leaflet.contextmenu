@@ -63,7 +63,7 @@ Mixin.ContextMenu = {
                 this._items.push(this._map.contextmenu.insertItem(itemOptions, itemOptions.index));
             }
 
-            this._map.once('contextmenu.hide', this._hideContextMenu(this._map), this);
+            this._map.once('contextmenu.hide', this._hideContextMenu.bind(this, this._map), this);
 
             this._map.contextmenu.showAt(pt, data);
         }

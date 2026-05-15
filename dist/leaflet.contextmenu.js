@@ -209,7 +209,7 @@ export const ContextMenu = Handler.extend({
         }
 
         var itemCls = `${ContextMenu.BASE_CLS}-item${options.itemCls ? ' ' + options.itemCls : ''}`,
-            cls = itemCls + options.disabled ? ` ${itemCls}-disabled` : '',
+            cls = options.disabled ? (itemCls + ' ' + itemCls + '-disabled') : itemCls,
             el = this._insertElementAt('a', cls, container, index),
             callback = this._createEventHandler(el, options.callback, options.context, options.hideOnSelect),
             icon = this._getIcon(options),
@@ -544,7 +544,7 @@ Mixin.ContextMenu = {
                 this._items.push(this._map.contextmenu.insertItem(itemOptions, itemOptions.index));
             }
 
-            this._map.once('contextmenu.hide', this._hideContextMenu(this._map), this);
+            this._map.once('contextmenu.hide', this._hideContextMenu.bind(this, this._map), this);
 
             this._map.contextmenu.showAt(pt, data);
         }
