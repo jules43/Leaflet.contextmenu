@@ -54,6 +54,10 @@ L.Mixin.ContextMenu = {
                 this._map.contextmenu.hideAllItems();
             }
 
+            if(this.options.contextmenuWidth) {
+                this._map.contextmenu._container.style.width = this.options.contextmenuWidth + 'px';
+            }
+
             for (i = 0, l = this.options.contextmenuItems.length; i < l; i++) {
                 itemOptions = this.options.contextmenuItems[i];
                 this._items.push(this._map.contextmenu.insertItem(itemOptions, itemOptions.index));
