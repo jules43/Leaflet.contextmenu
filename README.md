@@ -202,6 +202,7 @@ Fired when the context menu is shown. If the context menu was shown in response 
 | --- | --- | ---
 | contextmenu | Map.ContextMenu | The context menu.
 | relatedTarget | L.Marker/L.Path/undefined | If the context menu was opened for a map feature this property will contain a reference to that feature.
+| relatedEvent | event | original contextmenu event structure 
 
 #### contextmenu.hide
 

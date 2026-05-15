@@ -298,11 +298,13 @@ L.Map.ContextMenu = L.Handler.extend({
                 layerPoint = map.containerPointToLayerPoint(containerPoint),
                 latlng = map.layerPointToLatLng(layerPoint),
                 relatedTarget = me._showLocation.relatedTarget,
+                relatedEvent = me._showLocation.relatedEvent,
                 data = {
                   containerPoint: containerPoint,
                   layerPoint: layerPoint,
                   latlng: latlng,
-                  relatedTarget: relatedTarget
+                  relatedTarget: relatedTarget,
+                  relatedEvent: relatedEvent
                 };
 
             if (hideOnSelect) {
@@ -355,7 +357,9 @@ L.Map.ContextMenu = L.Handler.extend({
             if (data && data.relatedTarget){
                 this._showLocation.relatedTarget = data.relatedTarget;
             }
-
+            if (data && data.relatedEvent){
+                this._showLocation.relatedEvent = data.relatedEvent;
+            }
             this._setPosition(pt);
 
             if (!this._visible) {

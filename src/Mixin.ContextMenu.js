@@ -46,7 +46,7 @@ L.Mixin.ContextMenu = {
             data, pt, i, l;
 
         if (this._map.contextmenu) {
-            data = L.extend({relatedTarget: this}, e);
+            data = L.extend({relatedTarget: this, relatedEvent: e}, e);
 
             pt = this._map.mouseEventToContainerPoint(e.originalEvent);
 
