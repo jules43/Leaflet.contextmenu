@@ -200,7 +200,7 @@ export const ContextMenu = Handler.extend({
         }
 
         var itemCls = `${ContextMenu.BASE_CLS}-item${options.itemCls ? ' ' + options.itemCls : ''}`,
-            cls = itemCls + options.disabled ? ` ${itemCls}-disabled` : '',
+            cls = options.disabled ? (itemCls + ' ' + itemCls + '-disabled') : itemCls,
             el = this._insertElementAt('a', cls, container, index),
             callback = this._createEventHandler(el, options.callback, options.context, options.hideOnSelect),
             icon = this._getIcon(options),
