@@ -30,8 +30,8 @@
     "url": "https://github.com/aratcliffe/Leaflet.contextmenu/issues"
   },
   "homepage": "https://github.com/aratcliffe/Leaflet.contextmenu",
-  "devDependencies": {
-    "uglify-js": "^2.7.4",
-    "uglifycss": "^0.0.25"
+  "dependencies": {
+    "uglify-js": "^3.19.3",
+    "uglifycss": "^0.0.29"
   }
 }
