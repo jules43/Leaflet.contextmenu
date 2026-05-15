@@ -197,7 +197,7 @@ L.Map.ContextMenu = L.Handler.extend({
             return this._createSeparator(container, index);
         }
 
-        var itemCls = L.Map.ContextMenu.BASE_CLS + '-item',
+        var itemCls = L.Map.ContextMenu.BASE_CLS + '-item' + (options.itemCls ? ' ' + options.itemCls : ''),
             cls = options.disabled ? (itemCls + ' ' + itemCls + '-disabled') : itemCls,
             el = this._insertElementAt('a', cls, container, index),
             callback = this._createEventHandler(el, options.callback, options.context, options.hideOnSelect),
